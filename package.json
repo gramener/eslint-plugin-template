@@ -1,0 +1,27 @@
+{
+  "author": {
+    "name": "S Anand <s.anand@gramener.com>"
+  },
+  "dependencies": {
+    "eslint-plugin-html": "~1.5.2"
+  },
+  "description": "Parses out template declarations found in JS/HTML files",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "eslint": "~2.6.0",
+    "mocha": "^2.4.5"
+  },
+  "keywords": [
+    "template",
+    "eslint",
+    "eslint-plugin",
+    "eslintplugin"
+  ],
+  "license": "MIT",
+  "main": "eslint-plugin-template.js",
+  "name": "eslint-plugin-template",
+  "scripts": {
+    "test": "mocha tests --recursive"
+  },
+  "version": "0.1.0"
+}
