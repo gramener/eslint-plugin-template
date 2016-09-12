@@ -38,6 +38,9 @@ Add `template` to the plugins section of your `.eslintrc` configuration file. Yo
 }
 ```
 
+This automatically extracts JS from HTML files via `eslint-plugin-html`. So you
+do not need to include the `"html"` template.
+
 ## Tests
 ```
 $ npm test
