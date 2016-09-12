@@ -20,8 +20,12 @@
   "license": "MIT",
   "main": "eslint-plugin-template.js",
   "name": "eslint-plugin-template",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gramener/eslint-plugin-template.git"
+  },
   "scripts": {
     "test": "mocha tests --recursive"
   },
-  "version": "0.1.0"
+  "version": "0.1.1"
 }

@@ -5,7 +5,7 @@ Parses out template declarations found in js and html files.
 For example if you have a file like below, eslint will not be able to parse it normally due to the template markers. With this plugin, the linter is able to work normally. Note that whatever is inside the markers is replaced with `{}`.
 
 ```js
-  {# Set data in the JS variable data %}
+  {# Set data in the JS variable data #}
   {% import json %}
   var x = {{ json.dumps(data) }}
 ```
