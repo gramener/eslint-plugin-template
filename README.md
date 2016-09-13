@@ -45,3 +45,9 @@ do not need to include the `"html"` template.
 ```
 $ npm test
 ```
+
+## Release
+
+- Update the version in `package.json`
+- Commit to the master branch and push
+- Run `npm publish`
