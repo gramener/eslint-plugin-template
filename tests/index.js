@@ -20,5 +20,11 @@ describe('preprocess', function() {
   it('replaces {{ tags with objects', function() {
     var input = '{{x}};{{x\ny}};\n{{\nx\ny\n}}';
     expect(detemplatize(input)).to.deep.equal('{   };{  \n  };\n{ \n \n \n }');
-  });
+  })
+
+  it('replaces {% raw with objects', function() {
+    var input = '{%  \nraw \nx \n%};\n{%raw x%};{%rawx%}';
+    // TODO: not sure why the spaces are required as they are
+    expect(detemplatize(input)).to.deep.equal('{   \n    \n  \n };\n{       };        ');
+  })
 })

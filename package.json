@@ -3,7 +3,7 @@
     "name": "S Anand <s.anand@gramener.com>"
   },
   "dependencies": {
-    "eslint-plugin-html": "~1.5.2"
+    "eslint-plugin-html": "~1.6"
   },
   "description": "Parses out template declarations found in JS/HTML files",
   "devDependencies": {
