@@ -3,7 +3,7 @@
     "name": "S Anand <s.anand@gramener.com>"
   },
   "dependencies": {
-    "eslint-plugin-html": "~1.6"
+    "eslint-plugin-html": "~1.5.2"
   },
   "description": "Parses out template declarations found in JS/HTML files",
   "devDependencies": {
@@ -27,5 +27,5 @@
   "scripts": {
     "test": "mocha tests --recursive"
   },
-  "version": "0.1.3"
+  "version": "0.2.0"
 }
