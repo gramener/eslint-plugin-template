@@ -15,20 +15,11 @@ work normally. Note that whatever is inside the markers is replaced with `{}`.
 
 ## Installation
 
-You'll first need to install [ESLint](http://eslint.org):
-
 ```
-$ npm install eslint --save-dev
+npm install --save-dev eslint eslint-plugin-template
 ```
 
-Next, install `eslint-plugin-template`:
-
-```
-$ npm install eslint-plugin-template --save-dev
-```
-
-**Note:** If you installed ESLint globally (using the `-g` flag) then you must
-also install `eslint-plugin-template` globally.
+To install globally, using the `-g` flag.
 
 ## Usage
 

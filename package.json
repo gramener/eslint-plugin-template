@@ -3,13 +3,13 @@
     "name": "S Anand <s.anand@gramener.com>"
   },
   "dependencies": {
-    "eslint-plugin-html": "~1.5.2"
+    "htmlparser2": "3"
   },
   "description": "Parses out template declarations found in JS/HTML files",
   "devDependencies": {
-    "chai": "^3.5.0",
-    "eslint": "~2.6.0",
-    "mocha": "^2.4.5"
+    "eslint": "4",
+    "chai": "4",
+    "mocha": "5"
   },
   "keywords": [
     "template",
@@ -25,7 +25,7 @@
     "url": "git+https://github.com/gramener/eslint-plugin-template.git"
   },
   "scripts": {
-    "test": "mocha tests --recursive"
+    "test": "mocha"
   },
-  "version": "0.2.0"
+  "version": "0.3.0"
 }

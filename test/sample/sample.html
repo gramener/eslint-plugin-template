@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Page Title</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" media="screen" href="main.css" />
+  <script src="main.js"></script>
+</head>
+<body>
+  <script>
+    {# Set data in the JS variable data #}    // ignored
+    {% import json %}                         // ignored
+    var x = {{ json.dumps(data) }}            // becomes var x = {}
+    var y = {% raw json.dumps(data) %}        // becomes var y = {}
+    // Object.assign(x, y)                       // dummy command to use vars
+  </script>
+  <script>
+      {# Set data in the JS variable data #}    // ignored
+      var o = {% raw 'null' %}                  // becomes var o = {}
+      var x = {{ json.dumps(data) }}            // becomes var x = {}
+      var y = {% raw json.dumps(data) %}        // becomes var y = {}
+      // Object.assign(x, y, o)                    // dummy command to use vars
+  </script>
+</body>
+</html>
