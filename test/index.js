@@ -55,7 +55,7 @@ describe('run-lint', function () {
 
   it('returns errors on HTML templates', function () {
     var report = cli.executeOnFiles(['test/sample/sample.html'])
-    expect(report.errorCount).to.equal(5)
+    expect(report.errorCount).to.equal(6)
     expect(report.warningCount).to.equal(0)
     report.results[0].messages.forEach(function(message) {
       expect(message.ruleId).to.equal('no-unused-vars')

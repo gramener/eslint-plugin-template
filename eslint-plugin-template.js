@@ -65,7 +65,7 @@ function extract(text) {
     onopentag: function(name, attrs) {
       if (name !== "script")
         return
-      if (attrs.type && !attrs.type.test(jsMime))
+      if (attrs.type && !jsMime.test(attrs.type))
         return
       inScript = true
     },
@@ -74,11 +74,17 @@ function extract(text) {
         inScript = false
     },
     ontext: function() {
-      if (inScript)
+      if (inScript === true) {
         chunks.push({
           start: parser.startIndex,
           text: text.slice(parser.startIndex, parser.endIndex + 1)
         })
+        inScript = 'continue'
+      } else if (inScript == 'continue') {
+        // JS like "for (var i=0; i<10; i++)" gets split at the "<". Merge these
+        chunks[chunks.length - 1].text += text.slice(parser.startIndex, parser.endIndex + 1)
+      }
+
     }
   }, { decodeEntities: true })
   parser.write(text)
