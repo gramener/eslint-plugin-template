@@ -15,7 +15,7 @@ var remove_templates = {
 function dedent(str) {
   var match = str.match(/^[ \t]*(?=\S)/gm)
   if (!match) {
-    return str
+    return { size: 0, text: str }
   }
   var indent = Math.min.apply(Math, match.map(function(x) { return x.length }))
   var re = new RegExp('^[ \\t]{' + indent + '}', 'gm')
