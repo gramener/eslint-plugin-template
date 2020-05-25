@@ -23,13 +23,13 @@ describe('preprocess', function() {
 
   it('replaces {{ tags with objects', function() {
     var source = '{{x}};{{x\ny}};\n{{\nx\ny\n}}'
-    var target = '{   };{  \n  };\n{ \n \n \n }'
+    var target = '{/**/};{/*\n*/};\n{/* \n */}'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
   it('replaces {% raw with objects', function() {
     var source = '{%  \nraw \nx \n%};\n{%raw x%};{%rawx%}'
-    var target = '{   \n    \n  \n };\n{       };/*rawx*/'
+    var target = '{/* \n    \n  */};\n{/*   */};/*rawx*/'
     // TODO: not sure why the spaces are required as they are
     expect(detemplatize(source)).to.deep.equal(target)
   })
@@ -44,6 +44,7 @@ describe('run-lint', function () {
     }
   })
   cli.addPlugin('template', plugin)
+  cli.addPlugin('html', require('eslint-plugin-html'))
 
   it('returns errors on JS templates', function() {
     var report = cli.executeOnFiles(['test/sample/sample.js'])

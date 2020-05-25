@@ -7,7 +7,8 @@
   },
   "description": "Parses out template declarations found in JS/HTML files",
   "devDependencies": {
-    "eslint": "4",
+    "eslint": "7",
+    "eslint-plugin-html": "6",
     "chai": "4",
     "mocha": "5"
   },
@@ -17,6 +18,10 @@
     "eslint-plugin",
     "eslintplugin"
   ],
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "env": { "node": true }
+  },
   "license": "MIT",
   "main": "eslint-plugin-template.js",
   "name": "eslint-plugin-template",
@@ -25,7 +30,8 @@
     "url": "git+https://github.com/gramener/eslint-plugin-template.git"
   },
   "scripts": {
+    "pretest": "eslint *.js",
     "test": "mocha"
   },
-  "version": "0.3.2"
+  "version": "0.4.0"
 }

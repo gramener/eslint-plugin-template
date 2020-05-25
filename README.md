@@ -19,12 +19,9 @@ work normally. Note that whatever is inside the markers is replaced with `{}`.
 npm install --save-dev eslint eslint-plugin-template
 ```
 
-To install globally, using the `-g` flag.
-
 ## Usage
 
-Add `template` to the plugins section of your `.eslintrc` configuration file. You
-can omit the `eslint-plugin-` prefix:
+Add `template` to the plugins section of your `.eslintrc` configuration file:
 
 ```json
 {
@@ -34,10 +31,8 @@ can omit the `eslint-plugin-` prefix:
 }
 ```
 
-This automatically extracts JS from HTML files via `eslint-plugin-html`. So you
-do not need to include the `"html"` template.
-
 ## Tests
+
 ```
 $ npm test
 ```

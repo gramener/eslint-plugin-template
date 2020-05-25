@@ -17,7 +17,7 @@ function dedent(str) {
   if (!match) {
     return { size: 0, text: str }
   }
-  var indent = Math.min.apply(Math, match.map(function(x) { return x.length }))
+  var indent = Math.min.apply(Math, match.map(function (x) { return x.length }))
   var re = new RegExp('^[ \\t]{' + indent + '}', 'gm')
   return {
     size: indent,
@@ -26,14 +26,13 @@ function dedent(str) {
 }
 
 // For HTML and SVG files, first detemplatize, then run through HTML plugin
-var extract_scripts = function() {
-  var scripts,
-      originalText
+var extract_scripts = function () {
+  var scripts, originalText
   return {
     preprocess: function (text) {
       originalText = text
       scripts = extract(text)
-      return scripts.map(function(chunk) {
+      return scripts.map(function (chunk) {
         var indentation = dedent(chunk.text)
         chunk.indent_size = indentation.size
         return detemplatize(indentation.text)
@@ -41,11 +40,11 @@ var extract_scripts = function() {
     },
     postprocess: function (messages) {
       var result = []
-      messages.forEach(function(messageList, index) {
+      messages.forEach(function (messageList, index) {
         var lines = originalText.slice(0, scripts[index].start).split('\n')
         var lineno = lines.length - 1
         var colno = scripts[index].indent_size
-        messageList.forEach(function(message) {
+        messageList.forEach(function (message) {
           message.line += lineno
           message.column += colno
           result.push(message)
@@ -61,30 +60,28 @@ function extract(text) {
   var inScript = false
   var chunks = []
 
+  function push_chunk(state) {
+    chunks[chunks.length - 1].text += text.slice(parser.startIndex, parser.endIndex + 1)
+    return state
+  }
+
   var parser = new htmlparser.Parser({
-    onopentag: function(name, attrs) {
+    onopentag: function (name, attrs) {
       if (name !== "script")
         return
       if (attrs.type && !jsMime.test(attrs.type))
         return
-      inScript = true
+      chunks.push({ start: parser.startIndex, text: '' })
+      inScript = push_chunk(true)
     },
-    onclosetag: function(name) {
+    onclosetag: function (name) {
       if (name == "script" && inScript)
-        inScript = false
+        inScript = push_chunk(false)
     },
-    ontext: function() {
-      if (inScript === true) {
-        chunks.push({
-          start: parser.startIndex,
-          text: text.slice(parser.startIndex, parser.endIndex + 1)
-        })
-        inScript = 'continue'
-      } else if (inScript == 'continue') {
-        // JS like "for (var i=0; i<10; i++)" gets split at the "<". Merge these
-        chunks[chunks.length - 1].text += text.slice(parser.startIndex, parser.endIndex + 1)
-      }
-
+    ontext: function () {
+      // JS like "for (var i=0; i<10; i++)" gets split at the "<". Merge these
+      if (inScript)
+        inScript = push_chunk(true)
     }
   }, { decodeEntities: true })
   parser.write(text)

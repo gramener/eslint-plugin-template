@@ -1,5 +1,5 @@
 function replace_with_obj(match) {
-  return '{' + match.slice(1, -1).replace(/[^\n]/g, ' ') + '}'
+  return '{/*' + match.slice(3, -3).replace(/[^\n]/g, ' ') + '*/}'
 }
 
 function replace_with_comments(match) {
@@ -9,8 +9,8 @@ function replace_with_comments(match) {
 module.exports = function (text) {
   // {# comments #} is replaced with a /* ... */
   // {% anything %} is replaced with a /* ... */
-  // {% raw xxx %} is replaced with a {} -- since this is typically assigned to a variable
-  // {{ anything }} is replaced with a {} -- since this is typically assigned to a variable
+  // {% raw xxx %} is replaced with a {/* ... */} -- this is typically assigned to a variable
+  // {{ anything }} is replaced with a {/* ... */} -- this is typically assigned to a variable
   return text
     .replace(/{#[\s\S]*?#}/g, replace_with_comments)
     .replace(/{%\s*raw\s[\s\S]*?%}/g, replace_with_obj)
