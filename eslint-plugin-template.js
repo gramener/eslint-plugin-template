@@ -1,5 +1,5 @@
 var detemplatize = require('./detemplatize.js')
-var htmlparser = require('htmlparser2')
+var extract = require('./extract.js')
 
 // For JS files, just detemplatize
 var remove_templates = {
@@ -54,41 +54,6 @@ var extract_scripts = function () {
     }
   }
 }
-
-function extract(text) {
-  var jsMime = /^(application|text)\/(x-)?(javascript|babel|ecmascript-6)$/i
-  var inScript = false
-  var chunks = []
-
-  function push_chunk(state) {
-    chunks[chunks.length - 1].text += text.slice(parser.startIndex, parser.endIndex + 1)
-    return state
-  }
-
-  var parser = new htmlparser.Parser({
-    onopentag: function (name, attrs) {
-      if (name !== "script")
-        return
-      if (attrs.type && !jsMime.test(attrs.type))
-        return
-      chunks.push({ start: parser.startIndex, text: '' })
-      inScript = push_chunk(true)
-    },
-    onclosetag: function (name) {
-      if (name == "script" && inScript)
-        inScript = push_chunk(false)
-    },
-    ontext: function () {
-      // JS like "for (var i=0; i<10; i++)" gets split at the "<". Merge these
-      if (inScript)
-        inScript = push_chunk(true)
-    }
-  }, { decodeEntities: true })
-  parser.write(text)
-  parser.end()
-  return chunks
-}
-
 
 module.exports.processors = {
   ".html": extract_scripts(),
