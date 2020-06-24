@@ -22,6 +22,12 @@ describe('detemplatize', function() {
     var target = '\n/*xx\nxx\n*//*\nxx\nxx*/\n/*xx*/'
     expect(detemplatize(source)).to.deep.equal(target)
   })
+  
+  it('removes {% comment %} tags', function() {
+    var source = '\n{% comment %}xx\nxx\n/* nested */, "quote", \'single quote\'{% endcomment %}'
+    var target = '\n/*xx\nxx\n`` nested ``, `quote`, `single quote`*/'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
 
   it('replaces {{ tags with objects', function() {
     var source = '{{x}};{{x\ny}};\n{{\nx\ny\n}}'
@@ -46,7 +52,7 @@ describe('extract', function() {
   it('one-line script', function() {
     var source = '<script type="text/javascript">console.log("ok")</script>';
     expect(extract(source)).to.deep.equal([
-      {start: 31, end: 48, text: 'console.log("ok")'}
+      {start: 31, end: 48, text: 'console.log("ok")\n'}
     ]);
   });
 
@@ -77,7 +83,7 @@ describe('extract', function() {
 
     expect(extract(source)).to.deep.equal([
       {start: 37, end: 75, text: '\n   var x = {{x}};\n   console.log(x);\n'},
-      {start: 118, end: 156, text: '\n       var y = {{y}}; console.log(y);'}
+      {start: 118, end: 156, text: '\n       var y = {{y}}; console.log(y);\n'}
     ]);
   });
 
@@ -95,7 +101,7 @@ describe('extract', function() {
       expect(extract(source)).to.deep.equal([{
         start: scriptTag.length,
         end: source.length - '</script>'.length,
-        text: 'console.log("' + mimetype + '")'
+        text: 'console.log("' + mimetype + '")\n'
       }])
     })
   })

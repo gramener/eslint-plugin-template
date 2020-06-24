@@ -20,8 +20,11 @@ module.exports = function(text) {
     },
     onclosetag: function (name) {
       if (name == "script" && chunk) {
-         // remove the </script> part
+        // ignore the </script> part
         chunk.end = parser.startIndex;
+        // trim chunk and force a \n at the end to prevent invalid
+        // no-trailing-spaces & eol-last issues
+        chunk.text = chunk.text.replace(/[\s\n]*$/, '\n');
         chunks.push(chunk)
         chunk = null
       }
