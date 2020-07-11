@@ -7,7 +7,15 @@ function escape_quotes_n_comments(content) {
 }
 
 function replace_with_brackets(match) {
-  return '{/*' + replace_with_padding(match.slice(3, -3)) + '*/}'
+  return '{ ' + replace_with_padding(match.slice(2, -2)) + ' }'
+}
+
+function replace_with_quote(match) {
+  return '" ' + replace_with_padding(match.slice(2, -2)) + ' "'
+}
+
+function replace_with_singlequote(match) {
+  return "' " + replace_with_padding(match.slice(2, -2)) + " '"
 }
 
 function replace_with_padding(content) {
@@ -37,13 +45,39 @@ function detemplatize_values(text) {
 }
 
 function detemplatize_tags(text) {
-  // {% anything %} is replaced with a /* ... */
-  return text.replace(/{%[\s\S]*?%}/g, replace_with_comments)
+  text = text.replace(/{%[\s\S]*?%}\s*\n/g, '\n')
+
+    // {% anything %} is replaced with a ' ... '
+  return text.replace(/{%[\s\S]*?%}/g, replace_with_padding)
+}
+
+
+function detemplatize_branches(text) {
+  var branchRegex = /{%\s*(if|endif)\s[\s\S]*?%}/mg;
+  var stack = [], ranges = [];
+  var index = 0;
+  var match;
+
+  while((match = branchRegex.exec(text)) !== null) {
+      if (match[1] == 'if') {
+          stack.push(match.index);
+      } else if (stack.length) {
+          ranges.push([stack.pop(), match.index + match[0].length]);
+      }
+  }
+
+  ranges.forEach(function(range) {
+      text = text.slice(0, range[0]) + replace_with_padding(text.slice(range[0], range[1])) + text.slice(range[1]);
+  });
+
+  return text;
 }
 
 module.exports = function (text) {
   text = detemplatize_comments(text)
+  text = detemplatize_branches(text)
   text = detemplatize_values(text)
+  text = detemplatize_tags(text)
 
-  return detemplatize_tags(text)
+  return text
 }
