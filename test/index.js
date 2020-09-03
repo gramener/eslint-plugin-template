@@ -5,6 +5,10 @@ var expect = require('chai').expect
 var eslint = require("eslint")
 var plugin = require('..')
 
+function linecount(content) {
+  return content.split('\n').length - 1;
+}
+
 describe('detemplatize', function() {
   it('doesn\'t change input with no markers', function() {
     var source = 'var a = 4;\na++;\a = \'stuff\''
@@ -12,33 +16,47 @@ describe('detemplatize', function() {
   })
 
   it('removes {% tags', function() {
-    var source = '\n{%xx\nxx\n%}{%\nxx\nxx%}\n{%xx%}'
-    var target = '\n/*xx\nxx\n*//*\nxx\nxx*/\n/*xx*/'
+    expect(detemplatize('{%%}')).to.deep.equal('____')
+    expect(detemplatize('{% t %}')).to.deep.equal('____')
+    expect(detemplatize('{% test 1 %}')).to.deep.equal('____/* ×× */')
+
+    var source = '\n{%12\n34\n%}{%\n12\n345678901%}\n{%xx%}'
+    var target = '\n____/* ×\n\n */____/* \n\n××××××× */\n____'
+    expect(linecount(source)).to.equal(linecount(target)); // keeps line count
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
   it('removes {# tags', function() {
-    var source = '\n{#xx\nxx\n#}{#\nxx\nxx#}\n{#xx#}'
-    var target = '\n/*xx\nxx\n*//*\nxx\nxx*/\n/*xx*/'
+    expect(detemplatize('{##}')).to.deep.equal('');
+    expect(detemplatize('{# a comment #}')).to.deep.equal('/* ××××××××× */');
+
+    var source = '\n{#12\n34\n#}{#\n12\n34#}\n{#12#}'
+    var target = '\n/* ×\n××\n *//* \n××\n× */\n/* × */'
+    expect(linecount(source)).to.equal(linecount(target)); // keeps line count
     expect(detemplatize(source)).to.deep.equal(target)
   })
-  
+
   it('removes {% comment %} tags', function() {
     var source = '\n{% comment %}xx\nxx\n/* nested */, "quote", \'single quote\'{% endcomment %}'
-    var target = '\n/*xx\nxx\n`` nested ``, `quote`, `single quote`*/'
+    var target = '\n/* ××××××××××××\n××\n×××××××××××××××××××××××××××××××××××××××××××××××××× */'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('removes {% block|endblock %} tags', function() {
+    var source = '\n{% block %}xx\nxx\n/* nested */, "quote", \'single quote\'{% endblock %}'
+    var target = '\n/* ××××× */xx\nxx\n/* nested */, "quote", \'single quote\'/* ×××××××× */'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
   it('replaces {{ tags with objects', function() {
     var source = '{{x}};{{x\ny}};\n{{\nx\ny\n}}'
-    var target = '{/**/};{/*\n*/};\n{/* \n */}'
+    var target = '____;____;\n____'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
   it('replaces {% raw with objects', function() {
     var source = '{%  \nraw \nx \n%};\n{%raw x%};{%rawx%}'
-    var target = '{/* \n    \n  */};\n{/*   */};/*rawx*/'
-    // TODO: not sure why the spaces are required as they are
+    var target = '____/* \n××\n××\n */;\n____;____'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 })
@@ -111,8 +129,9 @@ describe('run-lint', function () {
   var cli = new eslint.CLIEngine({
     envs: ['browser'],
     extends: ['eslint:recommended'],
+    globals: ['____'],
     rules: {
-      indent: ['error', 4]
+      indent: ['error', 4],
     }
   })
   cli.addPlugin('template', plugin)

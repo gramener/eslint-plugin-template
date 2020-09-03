@@ -39,6 +39,12 @@ module.exports = function(text) {
     decodeEntities: true
   });
 
+  // ignore all <script> tags within a {% comment %}...{% endcomment %}
+  text = text.replace(/{%\s*comment\s[\s\S]*?%}[\s\S]*?{%\s*endcomment\s[\s\S]*?%}/g, function(match) {
+    return match.replace(/<script[\s>]+/g, '<!-- script ')
+                .replace(/<\/[\s]*script[\s]*>/g, '</script -->');
+  });
+
   parser.write(text)
   parser.end()
 
