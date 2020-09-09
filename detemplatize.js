@@ -28,11 +28,13 @@ function replace_with_singlequote(match) {
 }
 */
 
-function replace_with_comments(match, start) {
-  start = start || 0;
+function replace_with_comments(match, options) {
+  options = options || {};
 
-  var prefix = '/* ';
-  var suffix = ' */';
+  var start = options.start || 0;
+  var prefix = options.prefix || '/* ';
+  var suffix = options.suffix || ' */';
+
   var minlength = prefix.length + suffix.length + start;
 
   if (match.length > minlength) {
@@ -55,7 +57,7 @@ function replace_with_comments(match, start) {
 }
 
 function replace_with_placeholder(match) {
-  return '____' + replace_with_comments(match, 4);
+  return '____' + replace_with_comments(match, {start: 4});
 }
 
 function empty_js_comments(text) {
@@ -86,7 +88,7 @@ function detemplatize_inline_comments(text) {
 
 function detemplatize_tags(text) {
   // {{ anything }} is replaced with a { ... } -- this is typically assigned to a variable
-  text = text.replace(/{{[\s\S]*?}}/g, replace_with_placeholder)
+  text = text.replace(/{{[\s\S]*?}}/g, replace_with_placeholder);
 
   // {% block|endblock|with|endwith xxx %} are replaced by a /* ××× */
   text = text.replace(/{%\s*(block|endblock|blocktrans|endblocktrans|with|endwith)\s[\s\S]*?%}/g, function(match) {
@@ -107,7 +109,7 @@ function detemplatize_tags(text) {
   });
 
   // {% anything %} is replaced with a ' ××× '
-  return text.replace(/{%[\s\S]*?%}/g, replace_with_placeholder)
+  return text.replace(/{%[\s\S]*?%}/g, replace_with_placeholder);
 }
 
 function detemplatize_branches(text) {
@@ -124,8 +126,17 @@ function detemplatize_branches(text) {
   }
 
   ranges.forEach(function(range) {
-    text = text.slice(0, range[0]) + replace_with_comments(text.slice(range[0], range[1])) + text.slice(range[1]);
-  })
+    var content = text.slice(range[0], range[1]);
+
+    // add placeholder when branch contains a {{}} tag
+    var prefix = /{{[\s\S]*?}}/g.exec(content) ? '____/* −if−' : '/* −if−';
+
+    text = [
+      text.slice(0, range[0]),
+      replace_with_comments(content, {prefix: prefix}),
+      text.slice(range[1])
+    ].join('');
+  });
 
   return text;
 }

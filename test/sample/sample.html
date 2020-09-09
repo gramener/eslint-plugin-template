@@ -35,6 +35,10 @@
   <script>
       {% with a=12 %}{{a}}{% endwith %}   // becomes ____
   </script>
+      {% if True %}<script>var a = 12</script>{% endif %}   <!-- if|endif outside script is OK --> 
+  <script>
+      {% if True %}var a = 12{% else %}var a = []{% endif %}    // if|endif is not allowed by no-template-branch rule (recommended) 
+  </script>
   {% comment %}
   <script>
       var o = ????   // This lint error should be ignored because the <script> tag is within a comment

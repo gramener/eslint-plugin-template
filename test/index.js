@@ -1,9 +1,12 @@
-var detemplatize = require('../detemplatize.js')
-var extract = require('../extract.js')
+var expect = require('chai').expect;
+var eslint = require("eslint");
+var RuleTester = require("eslint").RuleTester;
 
-var expect = require('chai').expect
-var eslint = require("eslint")
-var plugin = require('..')
+var detemplatize = require('../detemplatize.js');
+var extract = require('../extract.js');
+
+var rule = require("../rules/no-template-branch");
+var plugin = require('../eslint-plugin-template');
 
 function linecount(content) {
   return content.split('\n').length - 1;
@@ -45,6 +48,20 @@ describe('detemplatize', function() {
   it('removes {% block|endblock %} tags', function() {
     var source = '\n{% block %}xx\nxx\n/* nested */, "quote", \'single quote\'{% endblock %}'
     var target = '\n/* ××××× */xx\nxx\n/* nested */, "quote", \'single quote\'/* ×××××××× */'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('removes {% if|else|endif %} tags', function() {
+    var source = '\n{% if %}xx\nxx\n/* nested */, "quote", \'single quote\'{% else %}\nxx\nxxxx{% endif %}'
+    var target = '\n/* −if−×××\n××\n×××××××××××××××××××××××××××××××××××××××××××××××\n××\n×××××××××××× */'
+    expect(linecount(source)).to.equal(linecount(target)); // keeps line count
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+  
+  it('removes {% if|else|endif %} tags with nested {{}}', function() {
+    var source = '\n{% if %}xx\nxx\n/* nested */, "quote", \'single quote\'{% else %}{{ x }}\nxx\nxxxx{% endif %}'
+    var target = '\n____/* −if−\n××\n××××××××××××××××××××××××××××××××××××××××××××××××××××××\n××\n×××××××××××× */'
+    expect(linecount(source)).to.equal(linecount(target)); // keeps line count
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
@@ -131,27 +148,42 @@ describe('run-lint', function () {
     extends: ['eslint:recommended'],
     globals: ['____'],
     rules: {
-      indent: ['error', 4],
+      indent: ['error', 4]
     }
-  })
-  cli.addPlugin('template', plugin)
+  });
+  cli.addPlugin('template', plugin);
   /* DOES NOT WORK WITH eslint-plugin-html ENABLED ! */
   /*cli.addPlugin('html', require('eslint-plugin-html'))*/
 
   it('returns errors on JS templates', function() {
     var report = cli.executeOnFiles(['test/sample/sample.js'])
-    expect(report.errorCount).to.equal(2)
-    expect(report.warningCount).to.equal(0)
-    expect(report.results[0].messages[0].ruleId).to.equal('no-unused-vars')
-    expect(report.results[0].messages[1].ruleId).to.equal('no-unused-vars')
-  })
+    expect(report.errorCount).to.equal(2);
+    expect(report.warningCount).to.equal(0);
+    expect(report.results[0].messages[0].ruleId).to.equal('no-unused-vars');
+    expect(report.results[0].messages[1].ruleId).to.equal('no-unused-vars');
+  });
 
   it('returns errors on HTML templates', function () {
-    var report = cli.executeOnFiles(['test/sample/sample.html'])
-    expect(report.errorCount).to.equal(6)
-    expect(report.warningCount).to.equal(0)
+    var report = cli.executeOnFiles(['test/sample/sample.html']);
+    expect(report.errorCount).to.equal(7);
+    expect(report.warningCount).to.equal(0);
     report.results[0].messages.forEach(function(message) {
       expect(message.ruleId).to.equal('no-unused-vars')
-    })
-  })
+    });
+  });
 })
+
+describe('run-rules', function () {
+  var ruleTester = new RuleTester();
+  ruleTester.run("template/no-template-branch", rule, {
+    valid: [{
+        code: "var foo = true; /* ×××××× */",
+        options: []
+    }],
+
+    invalid: [{
+        code: "var x = 0 /* −if−×××××××××××××× */",
+        errors: [{ message: "Do not use {% if %}...{% endif %} in javascript templates" }]
+    }]
+  });
+});
