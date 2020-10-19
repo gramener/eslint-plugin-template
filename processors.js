@@ -24,7 +24,8 @@ module.exports = {
        },
        postprocess: function (messages) {
          return messages[0];
-       }
+       },
+       supportsAutofix: false
      };
    },
    // For HTML and SVG files, first detemplatize, then run through HTML plugin
@@ -58,7 +59,8 @@ module.exports = {
          });
 
          return result
-       }
+       },
+       supportsAutofix: false
      };
    }
 };
