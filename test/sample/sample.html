@@ -12,17 +12,39 @@
   <script>
     {# Set data in the JS variable data #}    // ignored
     {% import json %}                         // ignored
-    var x = {{ json.dumps(data) }}            // becomes var x = {}
-    var y = {% raw json.dumps(data) %}        // becomes var y = {}
+    var x = {{ json.dumps(data) }}            // becomes var x = ____/* ×××× */
+    var y = {% raw json.dumps(data) %}        // becomes var y = ____/* ××××××× */
     // Object.assign(x, y)                       // dummy command to use vars
   </script>
   <script>
+      {% block test %}                              // ignored
       {# Set data in the JS variable data #}    // ignored
-      var o = {% raw 'null' %}                  // becomes var o = {}
-      var x = {{ json.dumps(data) }}            // becomes var x = {}
-      var y = {% raw json.dumps(data) %}        // becomes var y = {}
-      // Object.assign(x, y, o)                    // dummy command to use vars
+      {% comment %}This is a comment{% endcomment %} // ignored
+      var o = {% raw 'null' %}                  // becomes var o = ____/* × */
+      var x = {{ json.dumps(data) }}            // becomes var x = ____/* ×××× */
+      var y = {% raw json.dumps(data) %}        // becomes var y = ____/* ××××××× */
+      // Object.assign(x, y, o)                 // dummy command to use vars
+      {% endblock %}                                // ignored
   </script>
+  <script>
+      [{% for v in data %}{{v}},{% endfor %}'last']    // becomes [____,'last']
+  </script>
+  <script>
+      {% if True %}{{ json.dumps(data) }}{% else %}{}{% endif %}    // becomes /* ×××××××××××××××××× */
+  </script>
+  <script>
+      {% with a=12 %}{{a}}{% endwith %}   // becomes ____
+  </script>
+      {% if True %}<script>var a = 12</script>{% endif %}   <!-- if|endif outside script is OK --> 
+  <script>
+      {% if True %}var a = 12{% else %}var a = []{% endif %}    // if|endif is not allowed by no-template-branch rule (recommended) 
+  </script>
+  {% comment %}
+  <script>
+      var o = ????   // This lint error should be ignored because the <script> tag is within a comment
+  </script>
+  <script type="javascript">unknown();</script>
+  {% endcomment %}
   <script>
   for (var total=0, i=0; i<10; i++)
       total += i
