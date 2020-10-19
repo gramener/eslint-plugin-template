@@ -3,12 +3,12 @@
     "name": "S Anand <s.anand@gramener.com>"
   },
   "dependencies": {
-    "htmlparser2": "3"
+    "htmlparser2": "3",
+    "yarn": "^1.22.4"
   },
   "description": "Parses out template declarations found in JS/HTML files",
   "devDependencies": {
     "eslint": "7",
-    "eslint-plugin-html": "6",
     "chai": "4",
     "mocha": "5"
   },
@@ -20,7 +20,9 @@
   ],
   "eslintConfig": {
     "extends": "eslint:recommended",
-    "env": { "node": true }
+    "env": {
+      "node": true
+    }
   },
   "license": "MIT",
   "main": "eslint-plugin-template.js",
