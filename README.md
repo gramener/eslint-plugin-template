@@ -13,6 +13,23 @@ work normally. Note that whatever is inside the markers is replaced with `{}`.
   var y = {% raw json.dumps(data) %}        // becomes var y = {}
 ```
 
+It handles conditional templates within JavaScript similarly.
+
+```js
+{% if true %}
+  var x = 1
+{% else %}
+  var x = 2
+{% endif %}
+```
+
+becomes:
+
+```js
+  var x = 1
+  var x = 2
+```
+
 ## Installation
 
 ```

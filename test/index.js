@@ -7,7 +7,7 @@ var plugin = require('..')
 
 describe('preprocess', function() {
   it('doesn\'t change input with no markers', function() {
-    var source = 'var a = 4;\na++;\a = \'stuff\''
+    var source = 'var a = 4;\na++;a = \'stuff\''
     expect(detemplatize(source)).to.deep.equal(source)
   })
 
@@ -45,6 +45,12 @@ describe('preprocess', function() {
     var source = '{%  \nraw \nx \n%};\n{%raw x%};{%rawx%}'
     var target = '{/* \n    \n  */};\n{/*   */};/*    */'
     // TODO: not sure why the spaces are required as they are
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('', function () {
+    var source = '{% if true %}\nvar x = 1{% else %}var x = 2{% endif %}'
+    var target = '/*         */\nvar x = 1/*      */var x = 2/*       */'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 })
