@@ -1,3 +1,5 @@
+/* globals it, describe */
+
 var detemplatize = require('../detemplatize.js')
 var expect = require('chai').expect
 var eslint = require("eslint")
@@ -11,13 +13,25 @@ describe('preprocess', function() {
 
   it('removes {% tags', function() {
     var source = '\n{%xx\nxx\n%}{%\nxx\nxx%}\n{%xx%}'
-    var target = '\n/*xx\nxx\n*//*\nxx\nxx*/\n/*xx*/'
+    var target = '\n/*  \n  \n*//*\n  \n  */\n/*  */'
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
   it('removes {# tags', function() {
     var source = '\n{#xx\nxx\n#}{#\nxx\nxx#}\n{#xx#}'
-    var target = '\n/*xx\nxx\n*//*\nxx\nxx*/\n/*xx*/'
+    var target = '\n/*  \n  \n*//*\n  \n  */\n/*  */'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('works with tags inside comments', function () {
+    var source = '{# {% xxx %} #}'
+    var target = '/*           */'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('works with tags inside quotes', function () {
+    var source = "let x = '{% '' %}'"
+    var target = "let x = '/*    */'"
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
@@ -29,7 +43,7 @@ describe('preprocess', function() {
 
   it('replaces {% raw with objects', function() {
     var source = '{%  \nraw \nx \n%};\n{%raw x%};{%rawx%}'
-    var target = '{/* \n    \n  */};\n{/*   */};/*rawx*/'
+    var target = '{/* \n    \n  */};\n{/*   */};/*    */'
     // TODO: not sure why the spaces are required as they are
     expect(detemplatize(source)).to.deep.equal(target)
   })

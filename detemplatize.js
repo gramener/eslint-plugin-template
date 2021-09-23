@@ -3,7 +3,7 @@ function replace_with_obj(match) {
 }
 
 function replace_with_comments(match) {
-  return '/*' + match.slice(2, -2) + '*/'
+  return '/*' + match.slice(2, -2).replace(/[^\n]/g, ' ') + '*/'
 }
 
 module.exports = function (text) {
