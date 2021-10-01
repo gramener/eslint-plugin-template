@@ -72,7 +72,8 @@ describe('run-lint', function () {
     envs: ['browser'],
     extends: ['eslint:recommended'],
     rules: {
-      indent: ['error', 4]
+      indent: ['error', 4],
+      'linebreak-style': 'off',
     }
   })
   cli.addPlugin('template', plugin)
