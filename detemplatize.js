@@ -7,11 +7,13 @@ function replace_with_comments(match) {
 }
 
 module.exports = function (text) {
+  // /* eslint-disable */anything/* eslint-enable */ is removed
   // {# comments #} is replaced with a /* ... */
   // {% anything %} is replaced with a /* ... */
   // {% raw xxx %} is replaced with a {/* ... */} -- this is typically assigned to a variable
   // {{ anything }} is replaced with a {/* ... */} -- this is typically assigned to a variable
   return text
+    .replace(/\/\*\s*eslint-disable\s*\*\/[\s\S]*?(\/\*\s*eslint-enable\s*\*\/|$)/g, '')
     .replace(/{#[\s\S]*?#}/g, replace_with_comments)
     .replace(/{%\s*raw\s[\s\S]*?%}/g, replace_with_obj)
     .replace(/{%[\s\S]*?%}/g, replace_with_comments)
