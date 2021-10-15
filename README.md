@@ -30,9 +30,25 @@ becomes:
   var x = 2
 ```
 
+If there are edge cases that still cannot be handled, wrap them inside `/* eslint-disable */` and `/* eslint-enable */`:
+
+```js
+foo({{x}})
+/* eslint-disable */
+var x = {% if x %}{{x}}{% else %}0{% endif %}
+/* eslint-enable */
+```
+
+becomes:
+
+```js
+foo({})
+```
+
+
 ## Installation
 
-```
+```bash
 npm install --save-dev eslint eslint-plugin-template
 ```
 
@@ -50,12 +66,12 @@ Add `template` to the plugins section of your `.eslintrc` configuration file:
 
 ## Tests
 
-```
+```bash
 $ npm test
 ```
 
 ## Release
 
 - Update the version in `package.json`
-- Commit to the master branch and push
+- Commit to the master branch, update the tag, and push
 - Run `npm publish`
