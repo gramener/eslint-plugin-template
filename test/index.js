@@ -48,6 +48,18 @@ describe('preprocess', function() {
     expect(detemplatize(source)).to.deep.equal(target)
   })
 
+  it('discards code between eslint-disable .. eslint-enable', function() {
+    var source = 'foo({{x}});/*  eslint-disable */x{{y}} = 1;/* eslint-enable  */bar({{x}});'
+    var target = 'foo({/**/});bar({/**/});'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
+  it('discards code after eslint-disable', function() {
+    var source = 'foo({{x}});/* eslint-disable */x{{y}} = 1;'
+    var target = 'foo({/**/});'
+    expect(detemplatize(source)).to.deep.equal(target)
+  })
+
   it('', function () {
     var source = '{% if true %}\nvar x = 1{% else %}var x = 2{% endif %}'
     var target = '/*         */\nvar x = 1/*      */var x = 2/*       */'
