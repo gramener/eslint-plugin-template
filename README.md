@@ -67,7 +67,7 @@ Add `template` to the plugins section of your `.eslintrc` configuration file:
 ## Tests
 
 ```bash
-$ npm test
+npm test
 ```
 
 ## Release
