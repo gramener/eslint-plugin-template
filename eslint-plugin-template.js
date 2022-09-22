@@ -67,7 +67,7 @@ function extract(text) {
 
   var parser = new htmlparser.Parser({
     onopentag: function (name, attrs) {
-      if (name !== "script")
+      if (name !== 'script')
         return
       if (attrs.type && !jsMime.test(attrs.type))
         return
@@ -75,7 +75,7 @@ function extract(text) {
       inScript = push_chunk(true)
     },
     onclosetag: function (name) {
-      if (name == "script" && inScript)
+      if (name == 'script' && inScript)
         inScript = push_chunk(false)
     },
     ontext: function () {
@@ -91,7 +91,7 @@ function extract(text) {
 
 
 module.exports.processors = {
-  ".html": extract_scripts(),
-  ".svg": extract_scripts(),
-  ".js": remove_templates
+  '.html': extract_scripts(),
+  '.svg': extract_scripts(),
+  '.js': remove_templates
 }
